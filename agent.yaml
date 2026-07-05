@@ -1,0 +1,61 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/google/adk-python/refs/heads/main/src/google/adk/agents/config_schemas/AgentConfig.json
+name: shadow_ops_auditor
+agent_class: WorkflowAgent
+model: gemini-2.0-flash-exp
+description: "Production-grade multi-agent compliance pipeline topology for auditing agent shadow operations."
+
+# Global state variables definition for compliance tracking
+global_state:
+  target_tool:
+    type: string
+    default: ""
+  raw_arguments:
+    type: string
+    default: ""
+  risk_score:
+    type: integer
+    default: 0
+  threat_signatures:
+    type: array
+    items:
+      type: string
+    default: []
+  execution_status:
+    type: string
+    default: "PENDING"  # Potential values: PENDING, CLEARED, BLOCKED, QUARANTINED_HITL
+
+# Execution nodes in the compliance audit graph
+execution_nodes:
+  interceptor_tool:
+    type: tool
+    reference: src.tools.interceptor.local_script_interceptor
+    description: "Intercepts and audits raw script execution requests for security violations."
+  
+  compliance_skill:
+    type: skill
+    reference: src.skills.verification.before_agent_callback
+    description: "Enforces deterministic context verification and validates state safety."
+    
+  hitl_quarantine:
+    type: human_in_the_loop
+    require_confirmation: true
+    description: "Human-in-the-loop quarantine node for reviewing and releasing flagged requests."
+
+# Graph routing definition (nodes and edges)
+routing:
+  edges:
+    sequential:
+      - from: START
+        to: interceptor_tool
+      - from: interceptor_tool
+        to: compliance_skill
+      - from: compliance_skill
+        to: END
+    
+    conditional:
+      - from: interceptor_tool
+        to: hitl_quarantine
+        condition: "state.execution_status == 'QUARANTINED_HITL'"
+      - from: compliance_skill
+        to: hitl_quarantine
+        condition: "state.execution_status == 'QUARANTINED_HITL'"

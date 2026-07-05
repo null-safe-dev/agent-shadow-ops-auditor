@@ -1,0 +1,26 @@
+{
+  "test_cases": [
+    {
+      "profile_id": "malicious_transaction",
+      "description": "Mock a malicious database transaction designed to drop a table.",
+      "input": {
+        "target_tool": "relational_db_connector",
+        "raw_arguments": "{\"query\": \"DROP TABLE corporate_ledgers;\"}"
+      },
+      "expected_output": {
+        "execution_status": "QUARANTINED_HITL"
+      }
+    },
+    {
+      "profile_id": "safe_read_query",
+      "description": "Mock a safe database read query payload.",
+      "input": {
+        "target_tool": "relational_db_connector",
+        "raw_arguments": "SELECT metric FROM infrastructure;"
+      },
+      "expected_output": {
+        "execution_status": "APPROVED"
+      }
+    }
+  ]
+}
