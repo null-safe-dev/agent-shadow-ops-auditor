@@ -10,10 +10,80 @@ st.set_page_config(
     layout="wide"
 )
 
+# Premium Dark CSS Injection
+st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    /* Global fonts and background colors override */
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Style the text areas and select boxes to feel like code sandbox tools */
+    div.stTextArea textarea {
+        background-color: #0B0F19 !important;
+        border: 1px solid #334155 !important;
+        color: #38BDF8 !important;
+        font-family: 'Courier New', Courier, monospace !important;
+        font-size: 14px !important;
+        border-radius: 8px !important;
+    }
+    
+    div.stSelectbox div[data-baseweb="select"] {
+        background-color: #1E293B !important;
+        border: 1px solid #334155 !important;
+        border-radius: 8px !important;
+    }
+
+    /* Primary and Admin override button styling */
+    div.stButton > button {
+        background-color: #10B981 !important;
+        color: #0F172A !important;
+        font-weight: 600 !important;
+        border: none !important;
+        border-radius: 8px !important;
+        padding: 10px 24px !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+    
+    div.stButton > button:hover {
+        background-color: #34D399 !important;
+        transform: translateY(-1px) !important;
+    }
+
+    /* Red and Green Indicator bars */
+    .indicator-card {
+        background-color: #1E293B;
+        border-radius: 12px;
+        padding: 24px;
+        border-left: 6px solid #10B981;
+        margin-bottom: 20px;
+    }
+    
+    .indicator-card-error {
+        background-color: #1E293B;
+        border-radius: 12px;
+        padding: 24px;
+        border-left: 6px solid #EF4444;
+        margin-bottom: 20px;
+    }
+    
+    .metric-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: #F8FAFC;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # Header
-st.title("🛡️ Enterprise Agent Shadow-Ops Auditor Panel")
-st.markdown("### Left-Shift Multi-Agent Security & Governance Gate")
-st.write("Intercept tool execution requests, identify policy violations, and run administrative validation overrides.")
+st.markdown("""
+<div style='text-align: center; margin-bottom: 30px;'>
+    <h1 style='color: #F8FAFC; font-weight: 700;'>🛡️ Enterprise Agent Shadow-Ops Auditor Panel</h1>
+    <p style='color: #94A3B8; font-size: 18px; font-weight: 500;'>Left-Shift Multi-Agent Security & Governance Gate</p>
+</div>
+""", unsafe_allow_html=True)
 
 # Initialize Session State variables
 if "submitted" not in st.session_state:
@@ -26,10 +96,10 @@ if "overridden" not in st.session_state:
     st.session_state.overridden = False
 
 # Layout split into two equal columns
-col1, col2 = st.columns([1, 1])
+col1, col2 = st.columns([1, 1], gap="large")
 
 with col1:
-    st.markdown("## 📥 Inbound Agent Execution Box")
+    st.markdown("<h2 style='color: #F8FAFC; font-size: 22px; font-weight: 600; margin-bottom: 20px;'>📥 Inbound Agent Execution Box</h2>", unsafe_allow_html=True)
     
     # Target Tool Execution Interface selectbox
     target_tool = st.selectbox(
@@ -52,9 +122,10 @@ with col1:
         st.session_state.selected_tool = target_tool
         st.session_state.arguments_payload = raw_arguments
         st.session_state.overridden = False
+        st.rerun()
 
 with col2:
-    st.markdown("## 📊 Live Security Metrics Pipeline")
+    st.markdown("<h2 style='color: #F8FAFC; font-size: 22px; font-weight: 600; margin-bottom: 20px;'>📊 Live Security Metrics Pipeline</h2>", unsafe_allow_html=True)
 
     # Only execute logic if the form has been submitted
     if st.session_state.submitted:
@@ -77,32 +148,34 @@ with col2:
             # APPROVED State layout
             st.success("🟢 PAYLOAD APPROVED FOR EXECUTION")
             
-            # Risk score metric card
-            st.metric(
-                label="Evaluated Risk Score",
-                value=risk_score if not st.session_state.overridden else 0,
-                delta="Clean Payload" if not st.session_state.overridden else "Overridden By Admin",
-                delta_color="normal" if not st.session_state.overridden else "off"
-            )
+            # Custom indicator card
+            st.markdown(f"""
+                <div class="indicator-card">
+                    <p style="color: #94A3B8; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 4px 0;">Evaluated Risk Score</p>
+                    <div class="metric-value">{risk_score if not st.session_state.overridden else 0}</div>
+                    <p style="color: #10B981; font-size: 14px; margin: 8px 0 0 0; font-weight: 500;">{"✓ Safe Payload Baseline" if not st.session_state.overridden else "✓ Overridden By Admin"}</p>
+                </div>
+            """, unsafe_allow_html=True)
             
             # Info block
             st.info("No malicious vectors were flagged. Safety verification complete.")
             
             # Display override status alert if triggered
             if st.session_state.overridden:
-                st.info("🔓 ADMIN OVERRIDE SUCCESSFUL: Payload released to runner.")
+                st.toast("🔓 ADMIN OVERRIDE SUCCESSFUL: Payload released.")
 
         elif status == "QUARANTINED_HITL":
             # QUARANTINED State layout
             st.error("🔴 CRITICAL THREAT DETECTED: PAYLOAD QUARANTINED")
             
-            # Risk score metric card
-            st.metric(
-                label="Evaluated Risk Score",
-                value=risk_score,
-                delta="CRITICAL THREAT",
-                delta_color="inverse"
-            )
+            # Custom indicator card
+            st.markdown(f"""
+                <div class="indicator-card-error">
+                    <p style="color: #94A3B8; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 4px 0;">Evaluated Risk Score</p>
+                    <div class="metric-value">{risk_score}</div>
+                    <p style="color: #EF4444; font-size: 14px; margin: 8px 0 0 0; font-weight: 500;">✗ CRITICAL THREAT BOUNDARY VIOLATION</p>
+                </div>
+            """, unsafe_allow_html=True)
 
             # Outputs the specific elements inside the threat signatures array
             st.write("**Flagged Threat Signatures:**")
@@ -115,7 +188,8 @@ with col2:
             st.subheader("👥 Human-In-The-Loop Operations Room")
             st.write("Manual security intervention is required to unlock this execution request.")
             
-            if st.button("Admin Override: Force Release Payload"):
+            # Trigger button
+            if st.button("Admin Override: Force Release Payload", use_container_width=True):
                 st.session_state.overridden = True
                 st.rerun()
                 
