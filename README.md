@@ -13,12 +13,12 @@ This project intercepts command execution payloads, performs threat assessments 
 ```text
 agent-shadow-ops-auditor/
 │
-├── agent.yaml                 # Root ADK 2.0 Multi-Agent Topology Config
-├── requirements.txt           # Python application dependencies
-├── README.md                  # Project documentation & setup guides
-├── server.py                  # FastAPI HTTP Web Service (exposes /api/audit)
-├── app.py                     # Streamlit interactive security dashboard panel
-├── run_local_tests.py         # Standalone test runner script for evaluation loops
+├── .streamlit/
+│   └── config.toml            # Streamlit custom theme configuration
+│
+├── assets/
+│   ├── approved_state_ui.png  # UI screenshot: Approved status
+│   └── quarantined_state_ui.png # UI screenshot: Quarantined status
 │
 ├── src/
 │   ├── __init__.py
@@ -32,10 +32,17 @@ agent-shadow-ops-auditor/
 │       ├── verification.py    # Pre-agent deterministic context validation hook
 │       └── compliance_gate.py # Compliance checker verifying security bounds & states
 │
-└── tests/
-    ├── __init__.py
-    ├── compliance_evals.json  # JSON test cases (malicious and safe query profiles)
-    └── test_compliance.py     # Automated pytest compliance validation suite
+├── tests/
+│   ├── __init__.py
+│   ├── compliance_evals.json  # JSON test cases (malicious and safe query profiles)
+│   └── test_compliance.py     # Automated pytest compliance validation suite
+│
+├── agent.yaml                 # Root ADK 2.0 Multi-Agent Topology Config
+├── requirements.txt           # Python application dependencies
+├── README.md                  # Project documentation & setup guides
+├── server.py                  # FastAPI HTTP Web Service (exposes /api/audit)
+├── app.py                     # Streamlit interactive security dashboard panel
+└── run_local_tests.py         # Standalone test runner script for evaluation loops
 ```
 
 ---
