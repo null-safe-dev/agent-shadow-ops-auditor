@@ -4,6 +4,8 @@ A production-grade, code-first **Multi-Agent Compliance Pipeline & Security Gove
 
 This project intercepts command execution payloads, performs threat assessments using STRIDE modeling, triggers deterministic compliance gates, and exposes a Human-in-the-Loop (HITL) operations override dashboard.
 
+🚀 **Live Cloud Demo**: [agent-shadow-ops-auditor.streamlit.app](https://agent-shadow-ops-auditor.streamlit.app/)
+
 ---
 
 ## 📂 Project Architecture
@@ -130,9 +132,9 @@ Here is a breakdown of the interactive dashboard behavior under different compli
 ### Case 1: Safe Payload Approved for Execution
 When a query contains only safe baseline operations (e.g. read statements), the compliance pipeline approves the payload directly, displaying a green success banner, a low risk score (10), and details confirming that no threat vectors were detected.
 
-![Approved State UI](assets/approved_state_ui.jpg)
+![Approved State UI](assets/approved_state_ui.png)
 
 ### Case 2: Malicious Payload Quarantined (HITL Trigger)
 When the user enters a destructive command (e.g. `DROP TABLE`), the STRIDE interceptor registers threat signatures, raising the risk score to 100. The compliance skill gate then flags the status as `QUARANTINED_HITL`, pausing execution and showing an administrative bypass/release control.
 
-![Quarantined State UI](assets/quarantined_state_ui.jpg)
+![Quarantined State UI](assets/quarantined_state_ui.png)
