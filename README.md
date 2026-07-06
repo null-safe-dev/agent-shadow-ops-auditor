@@ -60,6 +60,29 @@ Configures a graph-based multi-agent execution pipeline:
   - Sequential: `START` ➔ `interceptor_tool` ➔ `compliance_skill` ➔ `END`.
   - Conditional: Directly routes from execution nodes into `hitl_quarantine` if `state.execution_status == 'QUARANTINED_HITL'`.
 
+#### Topology Flowchart
+
+```mermaid
+graph TD
+    classDef startEnd fill:#0F172A,stroke:#334155,stroke-width:2px,color:#F8FAFC;
+    classDef tool fill:#1E293B,stroke:#334155,stroke-width:1px,color:#F8FAFC;
+    classDef skill fill:#1E293B,stroke:#334155,stroke-width:1px,color:#F8FAFC;
+    classDef quarantine fill:#7F1D1D,stroke:#F87171,stroke-width:1px,color:#FEE2E2;
+
+    START([Start Execution]):::startEnd
+    Interceptor["Node 1: interceptor_tool (stride_evaluator.py)"]:::tool
+    Gate["Node 2: compliance_skill (compliance_gate.py)"]:::skill
+    Quarantine["Node 3: hitl_quarantine (Human-in-the-Loop)"]:::quarantine
+    END([End Execution / Approved]):::startEnd
+
+    START --> Interceptor
+    Interceptor --> Gate
+    Gate --> Check{execution_status?}
+    Check -->|APPROVED| END
+    Check -->|QUARANTINED_HITL| Quarantine
+    Quarantine -->|Admin Override / Release| END
+```
+
 ### 2. STRIDE Firewall (`src/tools/stride_evaluator.py`)
 Features `evaluate_tool_payload(target_tool: str, raw_arguments: str) -> dict`. It scans input commands for:
 - **Data Tampering**: Matches patterns like `DROP TABLE`, `rm -rf`, `DELETE FROM`, or `TRUNCATE TABLE`. (Calculates +60 risk score).
