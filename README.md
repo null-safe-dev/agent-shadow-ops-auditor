@@ -120,3 +120,19 @@ Execute the `pytest` test suite:
 ```bash
 pytest tests/test_compliance.py
 ```
+
+---
+
+## 📊 UI Execution Cases
+
+Here is a breakdown of the interactive dashboard behavior under different compliance states:
+
+### Case 1: Safe Payload Approved for Execution
+When a query contains only safe baseline operations (e.g. read statements), the compliance pipeline approves the payload directly, displaying a green success banner, a low risk score (10), and details confirming that no threat vectors were detected.
+
+![Approved State UI](assets/approved_state_ui.jpg)
+
+### Case 2: Malicious Payload Quarantined (HITL Trigger)
+When the user enters a destructive command (e.g. `DROP TABLE`), the STRIDE interceptor registers threat signatures, raising the risk score to 100. The compliance skill gate then flags the status as `QUARANTINED_HITL`, pausing execution and showing an administrative bypass/release control.
+
+![Quarantined State UI](assets/quarantined_state_ui.jpg)
